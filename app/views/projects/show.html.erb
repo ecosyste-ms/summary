@@ -1,0 +1,165 @@
+<% @meta_title = "#{@project.url} summary" %>
+
+<div class="container-sm">
+  <h1>
+    <%= @project.url %>
+  </h1>
+
+  <p class="card-subtitle mb-2 text-muted"><i><small>
+      Last synced: <%= distance_of_time_in_words_to_now @project.updated_at %> ago
+  </small></i></p>
+  
+  <% if @project.repository %>
+    <h2>
+      Repository metadata: 
+    </h2>
+    <%  @project.repository.each do |k,v|%>
+      <% next if v.blank? %>
+      <% if v.is_a?(Hash) %>
+        <%= k %>: 
+        <ul>
+          <% v.each do |k2,v2| %>
+            <% next if v2.blank? %>
+            <% if v2.is_a?(Hash) %>
+              <li><%= k2 %>: 
+                <ul>
+                  <% v2.each do |k3,v3| %>
+                    <% next if v3.blank? %>
+                    <li><%= k3 %>: <%= v3 %></li>
+                  <% end %>
+                </ul>
+              </li>
+            <% else %>
+              <li><%= k2 %>: <%= v2 %></li>
+            <% end%>
+          <% end %>
+        </ul>
+      <% else %>
+        <%= k %>: <%= v %><br/>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @project.packages %>
+    <h2>
+      Package metadata: (<%= @project.packages.count %> packages)
+    </h2>
+    <% @project.packages.each do |package| %>
+      <% package.each do |k,v|%>
+        <% next if k == 'repo_metadata' %>
+        <% next if v.blank? %>
+      <% if v.is_a?(Hash) %>
+        <%= k %>: 
+        <ul>
+          <% v.each do |k2,v2| %>
+            <% next if v2.blank? %>
+            <% if v2.is_a?(Hash) %>
+              <li><%= k2 %>: 
+                <ul>
+                  <% v2.each do |k3,v3| %>
+                    <% next if v3.blank? %>
+                    <li><%= k3 %>: <%= v3 %></li>
+                  <% end %>
+                </ul>
+              </li>
+            <% elsif v2.is_a?(Array) %>
+              <li><%= k2 %>: 
+                <ul>
+                  <% v2.each do |v3| %>
+                    <% next if v3.blank? %>
+                    <li><%= v3 %></li>
+                  <% end %>
+                </ul>
+              </li>
+            <% else %>
+              <li><%= k2 %>: <%= v2 %></li>
+            <% end%>
+          <% end %>
+        </ul>
+      <% elsif v.is_a?(Array) %>
+        <%= k %>: 
+        <ul>
+          <% v.each do |v2| %>
+            <% next if v2.blank? %>
+            <% if v2.is_a?(Hash) %>
+              <li>
+                <ul>
+                  <% v2.each do |k3,v3| %>
+                    <% next if v3.blank? %>
+                    <li><%= k3 %>: <%= v3 %></li>
+                  <% end %>
+                </ul>
+              </li>
+            <% else %>
+              <li><%= v2 %></li>
+            <% end%>
+          <% end %>
+        </ul>
+      <% else %>
+        <%= k %>: <%= v %><br/>
+      <% end %>
+      <% end %>
+      <hr>
+    <% end %>
+  <% end %>
+
+  <% if @project.commits %>
+    <h2>
+      Committers metadata: 
+    </h2>
+    <%  @project.commits.each do |k,v|%>
+      <% next if v.blank? %>
+      <% if v.is_a?(Hash) %>
+        <%= k %>: 
+        <ul>
+          <% v.each do |k2,v2| %>
+            <% next if v2.blank? %>
+            <% if v2.is_a?(Hash) %>
+              <li><%= k2 %>: 
+                <ul>
+                  <% v2.each do |k3,v3| %>
+                    <% next if v3.blank? %>
+                    <li><%= k3 %>: <%= v3 %></li>
+                  <% end %>
+                </ul>
+              </li>
+            <% elsif v2.is_a?(Array) %>
+              <li><%= k2 %>: 
+                <ul>
+                  <% v2.each do |v3| %>
+                    <% next if v3.blank? %>
+                    <li><%= v3 %></li>
+                  <% end %>
+                </ul>
+              </li>
+            <% else %>
+              <li><%= k2 %>: <%= v2 %></li>
+            <% end%>
+          <% end %>
+        </ul>
+      <% elsif v.is_a?(Array) %>
+        <%= k %>: 
+        <ul>
+          <% v.each do |v2| %>
+            <% next if v2.blank? %>
+            <% if v2.is_a?(Hash) %>
+              <li>
+                <ul>
+                  <% v2.each do |k3,v3| %>
+                    <% next if v3.blank? %>
+                    <li><%= k3 %>: <%= v3 %></li>
+                  <% end %>
+                </ul>
+              </li>
+            <% else %>
+              <li><%= v2 %></li>
+            <% end%>
+          <% end %>
+        </ul>
+      <% else %>
+        <%= k %>: <%= v %><br/>
+      <% end %>
+    <% end %>
+  <% end %>
+
+</div>
