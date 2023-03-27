@@ -1,0 +1,10 @@
+
+
+<div class="container-sm">
+  <h1 class='mb-4'>
+    Collections
+  </h1>
+  
+  <%= render @collections %>
+  <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>  
+</div>

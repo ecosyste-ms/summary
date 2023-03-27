@@ -2,6 +2,9 @@ class Project < ApplicationRecord
 
   validates :url, presence: true
 
+  belongs_to :collection, optional: true
+  counter_culture :collection
+
   def to_s
     url
   end
@@ -13,41 +16,65 @@ class Project < ApplicationRecord
   end
 
   def description
+    return unless repository.present?
     repository["description"]
   end
 
+  def repos_url
+    "https://repos.ecosyste.ms/api/v1/repositories/lookup?url=#{url}"
+  end
+
   def fetch_repository
-    # Fetch the repository from the URL
-    # and store it in the repository field
-    repos_url = "https://repos.ecosyste.ms/api/v1/repositories/lookup?url=#{url}"
-    conn = Faraday.new(url: repos_url)
+    conn = Faraday.new(url: repos_url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
     response = conn.get
     return unless response.success?
     self.repository = JSON.parse(response.body)
     self.save
+  rescue
+    puts "Error fetching repository for #{url}"
+  end
+
+  # TODO fetch repo dependencies
+  # TODO fetch repo tags
+
+  def packages_url
+    "https://packages.ecosyste.ms/api/v1/packages/lookup?repository_url=#{url}"
   end
 
   def fetch_packages
-    # Fetch the packages from the URL
-    # and store them in the packages field
-    packages_url = "https://packages.ecosyste.ms/api/v1/packages/lookup?repository_url=#{url}"
-    conn = Faraday.new(url: packages_url)
+    conn = Faraday.new(url: packages_url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
     response = conn.get
     return unless response.success?
     self.packages = JSON.parse(response.body)
     self.save
+  rescue
+    puts "Error fetching packages for #{url}"
+  end
+
+  def commits_url
+    "https://commits.ecosyste.ms/api/v1/repositories/lookup?url=#{url}"
   end
 
   def fetch_commits
-    # Fetch the commits from the URL
-    # and store them in the commits field
-    # commits_url = "https://commits.ecosyste.ms/api/v1/repositories/lookup?url=#{url}"
-    commits_url = "http://localhost:3000/api/v1/repositories/lookup?url=#{url}"
-    conn = Faraday.new(url: commits_url)
+    conn = Faraday.new(url: commits_url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
     response = conn.get
     return unless response.success?
     self.commits = JSON.parse(response.body)
     self.save
+  # rescue
+  #   puts "Error fetching commits for #{url}"
+  #   # TODO log error
   end
 
   def fetch_dependent_repos

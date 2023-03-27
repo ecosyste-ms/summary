@@ -22,6 +22,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :collections, only: [:index, :show]
+
   resources :projects, constraints: { id: /.*/ }, only: [:index, :show]
   
   resources :exports, only: [:index], path: 'open-data'
