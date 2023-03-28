@@ -13,6 +13,29 @@ class Project < ApplicationRecord
     fetch_repository
     fetch_packages
     fetch_commits
+    fetch_events
+  end
+
+  def ping
+    ping_urls.each do |url|
+      Faraday.get(url) rescue nil
+    end
+  end
+
+  def ping_urls
+    ([repos_ping_url] + packages_ping_urls).compact.uniq
+  end
+
+  def repos_ping_url
+    return unless repository.present?
+    "https://repos.ecosyste.ms/api/v1/hosts/#{repository['host']['name']}/repositories/#{repository['full_name']}/ping"
+  end
+
+  def packages_ping_urls
+    return unless packages.present?
+    packages.map do |package|
+      "https://packages.ecosyste.ms/api/v1/registries/#{package['registry']['name']}/packages/#{package['name']}/ping"
+    end
   end
 
   def description
@@ -36,6 +59,42 @@ class Project < ApplicationRecord
     self.save
   rescue
     puts "Error fetching repository for #{url}"
+  end
+
+  def timeline_url
+    return unless repository.present?
+    return unless repository["host"]["name"] == "GitHub"
+
+    "https://timeline.ecosyste.ms/api/v1/events/#{repository['full_name']}/summary"
+  end
+
+  def fetch_events
+    return unless timeline_url.present?
+    conn = Faraday.new(url: timeline_url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
+    response = conn.get
+    return unless response.success?
+    summary = JSON.parse(response.body)
+
+    conn = Faraday.new(url: timeline_url+'?after='+1.year.ago.to_fs(:iso8601)) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
+    response = conn.get
+    return unless response.success?
+    last_year = JSON.parse(response.body)
+
+    self.events = {
+      "total" => summary,
+      "last_year" => last_year
+    }
+    self.save
+  rescue
+    puts "Error fetching events for #{url}"
   end
 
   # TODO fetch repo dependencies

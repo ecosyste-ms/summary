@@ -23,8 +23,19 @@
 
     <ul>
       <li>
+        Host: <%= @project.repository['host']['name'] %>
+      </li>
+      <li>
+        URL: <%= link_to @project['url'], @project['url'] %>
+      </li>
+      <li>
+        Owner: <%= @project.repository['owner'] %>
+      </li>
+      <% if @project.repository['license'] %>
+      <li>
         License: <%= @project.repository['license'] %>
       </li>
+      <% end %>
       <% if @project.repository['archived'] %>
       <li>
         Archived: <%= @project.repository['archived'] %>
@@ -36,14 +47,18 @@
       </li>
       <% end %>
       <li>
-        Created: <%= @project.repository['created_at'] %>
+        Created: <%= @project.repository['created_at'] %> 
+        (<%= distance_of_time_in_words_to_now @project.repository['created_at'] %> ago)
       </li>
       <li>
         Default Branch: <%= @project.repository['default_branch'] %>
       </li>
+      <% if @project.repository['pushed_at'] %> 
       <li>
-        Last Pushed: <%= @project.repository['pushed_at'] %>
+        Last Pushed: <%= @project.repository['pushed_at'] %> 
+        (<%= distance_of_time_in_words_to_now @project.repository['pushed_at'] %> ago)
       </li>
+      <% end %>
       <li>
         Last Synced: <%= @project.repository['last_synced_at'] %> 
         (<%= distance_of_time_in_words_to_now @project.repository['last_synced_at'] %> ago)
@@ -56,45 +71,89 @@
         Topics: <%= @project.repository['topics'].join(', ') %>
       </li>
       <% end %>
+      <% if @project.repository['language'] %>
       <li>
         Language: <%= @project.repository['language'] %>
       </li>
+      <% end %>
       <% if @project.repository['homepage'] %>
       <li>
         Homepage: <%= link_to @project.repository['homepage'], @project.repository['homepage'] %>
       </li>
       <% end %>
+      <% if @project.repository['size'] %>
       <li>
         Size: <%= number_to_human_size @project.repository['size']*1000 %>
       </li>
+      <% end %>
       <li>
         Stars: <%= @project.repository['stargazers_count'] %>
       </li>
+      <% if  @project.repository['subscribers_count'] %>
       <li>
         Watchers: <%= @project.repository['subscribers_count'] %>
       </li>
+      <% end %>
       <li>
         Forks: <%= @project.repository['forks_count'] %>
       </li>
       <li>
         Open Issues: <%= @project.repository['open_issues_count'] %>
       </li>
-      <% if @project.repository['metadata'] && @project.repository['metadata']['files'] %>
-      <li>
-        Metadata Files:
-        <ul>
-          <% @project.repository['metadata']['files'].each do |k,v| %>
-            <% next if v.blank? %>
-            <li>
-              <%= k.humanize %>: <%= v %>
-            </li>
-          <% end %>
-        </ul>
-      </li>
+      <% if @project.repository['metadata']  %>
+        <% if @project.repository['metadata']['files'] %>
+          <li>
+            Metadata Files:
+            <ul>
+              <% @project.repository['metadata']['files'].each do |k,v| %>
+                <% next if v.blank? %>
+                <li>
+                  <%= k.humanize %>: <%= v %>
+                </li>
+              <% end %>
+            </ul>
+          </li>
+        <% end %>
+        <% if @project.repository['metadata']['funding'] %>
+          <li>
+            Funding: 
+            <ul>
+              <% @project.repository['metadata']['funding'].each do |k,v| %>
+                <li>
+                  <%= k.humanize %>: <%= Array(v).join(', ') %>
+                </li>
+              <% end %>
+            </ul>
+          </li>
+        <% end %>
       <% end %>
     </ul>
-  <% end %>
 
+    <% if @project.events %>
+      <hr>
+      <h2>
+        Events
+      </h2>
+      
+      <h5>Total</h5>
+      <ul>
+        <% @project.events['total'].each do |k,v| %>
+          <li>
+            <%= k.underscore.humanize %>: <%= v %>
+          </li>
+        <% end %>
+      </ul>
+      <h5>Last Year</h5>
+      <ul>
+        <% @project.events['last_year'].each do |k,v| %>
+          <li>
+            <%= k.underscore.humanize %>: <%= v %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+
+  <% end %>
 
   <% if @project.packages %>
     <hr>
@@ -147,10 +206,10 @@
                   Versions: <%= package['versions_count'] %>
                 </li>
                 <li>
-                  Dependent Packages: <%= package['dependent_packages_count'] %>
+                  Dependent Packages: <%= link_to package['dependent_packages_count'], package['dependent_packages_url'].gsub('/api/v1', ''), target: :_blank %>
                 </li>
                 <li>
-                  Dependent Repositories: <%= package['dependent_packages_count'] %>
+                  Dependent Repositories: <%= link_to package['dependent_repos_count'], "https://repos.ecosyste.ms/usage/#{package['ecosystem']}/#{package['name']}", target: :_blank %>
                 </li>
                 <% if package['downloads'] %>
                 <li>
@@ -180,6 +239,20 @@
                   </ul>
                 </li>
                 <% end%>
+                <% if package['metadata'] %>
+                  <% if package['metadata']['funding'] %>
+                    <li>
+                      Funding: 
+                      <ul>
+                        <% Array(package['metadata']['funding']).each do |link| %>
+                          <li>
+                            <%= Array(link).join(': ') %>
+                          </li>
+                        <% end %>
+                      </ul>
+                    </li>
+                  <% end %>
+                <% end %>
               </ul>
             </div>
           </div>
@@ -213,14 +286,23 @@
           <th>Commits</th>
         </tr>
       </thead>
-      <tbody>
-        <% @project.commits['committers'].each do |committer| %>
+      <tbody>        
+        <% @project.commits['committers'].first(30).each do |committer| %>
           <tr>
             <td><%= committer['name'] %></td>
             <td><%= committer['email'] %></td>
             <td><%= committer['count'] %></td>
           </tr>
         <% end %>
+        <% if @project.commits['total_committers'] > 30 %>
+          <tr>
+            <td colspan='3'>
+              <i>
+              and <%= @project.commits['total_committers'] - 30 %> more...
+              </i>
+            </td>
+          </tr>
+        <%end %>
       </tbody>
     </table>
     <% end %>
