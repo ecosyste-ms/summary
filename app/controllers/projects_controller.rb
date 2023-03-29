@@ -4,7 +4,7 @@ class ProjectsController < ApplicationController
   end
 
   def index
-    @scope = Project.all
+    @scope = Project.all.order('created_at DESC')
     @pagy, @projects = pagy(@scope)
   end
 end
