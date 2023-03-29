@@ -12,11 +12,12 @@
     <%= stylesheet_link_tag "application", :media => "all" %>
     <%= javascript_include_tag "application" %>
     <link rel="stylesheet" href="//unpkg.com/@highlightjs/cdn-assets@11.5.1/styles/github.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-print-css/css/bootstrap-print.min.css" media="print">
     <script src="//unpkg.com/@highlightjs/cdn-assets@11.5.1/highlight.min.js"></script>
   </head>
   <body>
     <div class="main">
-      <div class="px-4 container-sm pt-2 mt-5 text-center">
+      <div class="px-4 container-md pt-2 mt-5 text-center">
         <h1 class="display-5 fw-bold">
           <a href="/" class="text-decoration-hover link-dark">Ecosyste.ms: Summary</a>
         </h1>
@@ -30,7 +31,7 @@
       <%= yield %>
     </div>
 
-    <footer class="py-5 container-sm text-muted text-center">
+    <footer class="py-5 container-md text-muted text-center">
       <%= link_to 'Ecosyste.ms', 'https://ecosyste.ms', class: 'link-dark', target: :_blank  %> — 
       <%= link_to 'Blog', "https://blog.ecosyste.ms", class: 'link-dark', target: :_blank  %> — 
       <!-- <%= link_to 'Data', exports_path, class: 'link-dark' %> — -->
