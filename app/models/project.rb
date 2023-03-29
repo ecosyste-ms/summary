@@ -32,7 +32,7 @@ class Project < ApplicationRecord
   end
 
   def packages_ping_urls
-    return unless packages.present?
+    return [] unless packages.present?
     packages.map do |package|
       "https://packages.ecosyste.ms/api/v1/registries/#{package['registry']['name']}/packages/#{package['name']}/ping"
     end
@@ -118,12 +118,17 @@ class Project < ApplicationRecord
     puts "Error fetching packages for #{url}"
   end
 
-  def commits_url
+  def commits_api_url
     "https://commits.ecosyste.ms/api/v1/repositories/lookup?url=#{url}"
   end
 
+  def commits_url
+    "https://commits.ecosyste.ms/repositories/lookup?url=#{url}"
+  end
+
+
   def fetch_commits
-    conn = Faraday.new(url: commits_url) do |faraday|
+    conn = Faraday.new(url: commits_api_url) do |faraday|
       faraday.response :follow_redirects
       faraday.adapter Faraday.default_adapter
     end
@@ -131,9 +136,8 @@ class Project < ApplicationRecord
     return unless response.success?
     self.commits = JSON.parse(response.body)
     self.save
-  # rescue
-  #   puts "Error fetching commits for #{url}"
-  #   # TODO log error
+  rescue
+    puts "Error fetching commits for #{url}"
   end
 
   def fetch_dependent_repos
