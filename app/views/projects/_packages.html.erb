@@ -52,7 +52,7 @@
     </ul>
 
 
-    <% @project.packages.sort_by{|p| p['rankings']['average'] }.each do |package| %>
+    <% @project.packages.sort_by{|p| p['rankings']['average'] || 100 }.each do |package| %>
       <div class='card mb-3'>
         <div class="card-body pb-1">
           <div class="d-flex">
