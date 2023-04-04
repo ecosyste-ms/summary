@@ -4,13 +4,18 @@ class CollectionsController < ApplicationController
 
     scope = @collection.projects.order('id asc')
 
-    if params[:keyword]
+    if params[:keyword].present?
       scope = scope.where("keywords @> ARRAY[?]::varchar[]", params[:keyword])
     end
 
-    if params[:committer]
+    if params[:committer].present?
       scope = @collection.committers_projects(params[:committer])
     end
+
+    if params[:dependency].present?
+      scope = @collection.dependency_projects(params[:dependency])
+    end
+      
 
     @pagy, @projects = pagy_array(scope)
   end

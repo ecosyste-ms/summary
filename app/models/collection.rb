@@ -18,4 +18,13 @@ class Collection < ApplicationRecord
   def committers_projects(name)
     projects.select{|p| p.committers_names.include?(name) }
   end
+
+  def dependencies
+    deps = projects.map(&:dependency_packages).flatten(1)
+    deps.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
+  end
+
+  def dependency_projects(dependency)
+    projects.select{|p| p.dependency_packages.include?(dependency.split(':')) }
+  end
 end

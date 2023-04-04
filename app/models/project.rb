@@ -135,7 +135,6 @@ class Project < ApplicationRecord
     "https://commits.ecosyste.ms/repositories/lookup?url=#{url}"
   end
 
-
   def fetch_commits
     conn = Faraday.new(url: commits_api_url) do |faraday|
       faraday.response :follow_redirects
@@ -153,6 +152,25 @@ class Project < ApplicationRecord
     return [] unless commits.present?
     return [] unless commits["committers"].present?
     commits["committers"].map{|c| c["name"]}.uniq
+  end
+
+  def fetch_dependencies
+    return unless repository.present?
+    conn = Faraday.new(url: repository['manifests_url']) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+    response = conn.get
+    return unless response.success?
+    self.dependencies = JSON.parse(response.body)
+    self.save
+  rescue
+    puts "Error fetching dependencies for #{url}"
+  end
+
+  def dependency_packages
+    return [] unless dependencies.present?
+    dependencies.map{|d| d["dependencies"]}.flatten.map{|d| [d['ecosystem'],d["package_name"]]}.uniq
   end
 
   def fetch_dependent_repos
