@@ -12,8 +12,17 @@ class Project < ApplicationRecord
   def sync
     fetch_repository
     fetch_packages
+    combine_keywords
     fetch_commits
     fetch_events
+  end
+
+  def combine_keywords
+    keywords = []
+    keywords += repository["topics"] if repository.present?
+    keywords += packages.map{|p| p["keywords"]}.flatten if packages.present?
+    self.keywords = keywords.uniq.reject(&:blank?)
+    self.save
   end
 
   def ping

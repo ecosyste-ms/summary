@@ -1,7 +1,14 @@
 class CollectionsController < ApplicationController
   def show
     @collection = Collection.find(params[:id])
-    @pagy, @projects = pagy(@collection.projects.order('id asc'))
+
+    scope = @collection.projects
+
+    if params[:keyword]
+      scope = scope.where("keywords @> ARRAY[?]::varchar[]", params[:keyword])
+    end
+
+    @pagy, @projects = pagy(scope.order('id asc'))
   end
 
   def index

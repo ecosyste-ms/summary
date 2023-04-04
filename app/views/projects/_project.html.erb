@@ -10,6 +10,17 @@
         <p class="card-subtitle mb-2 text-muted">
           <%= project.description %>
         </p>
+
+        <% if project.keywords.any? %>
+          <p>
+            <% project.keywords.each do |keyword| %>
+              <span class="badge bg-light text-dark">
+                <%= keyword %>
+              </span>
+            <% end %>
+          </p>
+        <% end %>
+
         <p class="card-subtitle mb-2 text-muted"><i><small>
           Last synced: <%= project.updated_at.strftime("%d %b %Y") %>
         </small></i></p>

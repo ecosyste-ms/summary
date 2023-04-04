@@ -8,10 +8,20 @@
     <%= @project.url %>
   </h1>
 
+  <% if @project.keywords.any? %>
+    <p>
+      <% @project.keywords.each do |keyword| %>
+        <span class="badge bg-light text-dark">
+          <%= keyword %>
+        </span>
+      <% end %>
+    </p>
+  <% end %>
+
   <p class="card-subtitle mb-2 text-muted"><i><small>
       Last synced: <%= distance_of_time_in_words_to_now @project.updated_at %> ago
   </small></i></p>
-  
+
   <% if @project.repository %>
     <h2>
       Repository metadata: 
