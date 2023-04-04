@@ -149,6 +149,12 @@ class Project < ApplicationRecord
     puts "Error fetching commits for #{url}"
   end
 
+  def committers_names
+    return [] unless commits.present?
+    return [] unless commits["committers"].present?
+    commits["committers"].map{|c| c["name"]}.uniq
+  end
+
   def fetch_dependent_repos
     return unless packages.present?
     dependent_repos = []

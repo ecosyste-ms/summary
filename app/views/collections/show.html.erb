@@ -14,11 +14,27 @@
           Related Keywords
         </div>
         <div class="list-group list-group-flush">
-          <% @collection.keywords.first(300).each do |keyword, count| %>
+          <% @collection.keywords.first(100).each do |keyword, count| %>
             <% next if keyword.blank? %>
             <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword == params[:keyword]%>" href="<%= collection_path(@collection, keyword: keyword) %>">
               <%= keyword %>
               <span class="badge bg-primary rounded-pill"><%= number_with_delimiter count%></span>
+            </a>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
+    <div class='card mb-3'>
+        <div class="card-header">
+          Committers
+        </div>
+        <div class="list-group list-group-flush">
+          <% @collection.committers.first(100).each do |keyword, count| %>
+            <% next if keyword.blank? %>
+            <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword == params[:committer]%>" href="<%= collection_path(@collection, committer: keyword) %>">
+              <%= keyword %>
+              <span class="badge bg-primary rounded-pill" href='https://github.com/search?q=<%= keyword %>&type=users' target='_blank'><%= number_with_delimiter count%></span>
             </a>
           <% end %>
         </ul>
