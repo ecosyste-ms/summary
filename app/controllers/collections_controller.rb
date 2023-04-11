@@ -4,6 +4,8 @@ class CollectionsController < ApplicationController
 
     scope = @collection.projects.order('id asc')
 
+    scope = scope.reject{|p| p.repository.present? && p.repository['source_name'].present? && p.repository['stargazers_count'] == 0 }
+
     if params[:keyword].present?
       scope = scope.where("keywords @> ARRAY[?]::varchar[]", params[:keyword])
     end
@@ -15,9 +17,8 @@ class CollectionsController < ApplicationController
     if params[:dependency].present?
       scope = @collection.dependency_projects(params[:dependency])
     end
-      
 
-    @pagy, @projects = pagy_array(scope)
+    @pagy, @projects = pagy_array(scope.to_a.sort_by(&:score).reverse)
   end
 
   def index

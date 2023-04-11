@@ -69,6 +69,16 @@
                 <li>
                   Homepage: <%= package['homepage'] %>
                 </li>
+                <% if package['keywords'].present? %>
+                <li>
+                  Keywords: <%= package['keywords'].join(', ') %>
+                </li>
+                <% end %>
+                <% if package['status'].present? %>
+                <li>
+                  Status: <%= package['status'] %>
+                </li>
+                <% end %>
                 <% if package['documentation_url'].present? %>
                   <li>
                     Documentation: <%= link_to package['documentation_url'], package['documentation_url'] %>
@@ -105,7 +115,7 @@
                 </li>
                 <% if package['downloads'] %>
                 <li>
-                  Downloads: <%= number_with_delimiter(package['downloads']) %> <%= package['downloads_period'].try(:humanize).gsub('-', ' ') %> 
+                  Downloads: <%= number_with_delimiter(package['downloads']) %> <%= package['downloads_period'].try(:humanize).try(:gsub,'-', ' ') %> 
                 </li>
                 <% end %>
                 <li>

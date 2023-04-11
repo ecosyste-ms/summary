@@ -1,12 +1,14 @@
-<% if @project.commits %>
+<% if @project.commits && @project.commits['last_synced_at'] %>
     <hr>
     <h2>
       Committers metadata
     </h2>
 
+    <% if @project.commits['last_synced_at'] %>
       <p class="card-subtitle mb-2 text-muted"><i><small>
         Last synced: <%= distance_of_time_in_words_to_now @project.commits['last_synced_at'] %> ago
     </small></i></p>
+    <% end %>
     <% if @project.commits['total_commits'] %>
       <p>
         Total Commits: <%= number_with_delimiter @project.commits['total_commits'] %><br>

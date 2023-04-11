@@ -10,11 +10,32 @@ class Project < ApplicationRecord
   end
 
   def sync
+    check_url
     fetch_repository
+    fetch_dependencies
     fetch_packages
     combine_keywords
     fetch_commits
     fetch_events
+    update(last_synced_at: Time.now)
+  end
+
+  def sync_async
+    SyncProjectWorker.perform_async(id)
+  end
+
+  def check_url
+    conn = Faraday.new(url: url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
+    response = conn.get
+    return unless response.success?
+    update(url: response.env.url.to_s) 
+    # TODO avoid duplicates
+  rescue
+    # failed to load
   end
 
   def combine_keywords
@@ -170,7 +191,7 @@ class Project < ApplicationRecord
 
   def dependency_packages
     return [] unless dependencies.present?
-    dependencies.map{|d| d["dependencies"]}.flatten.map{|d| [d['ecosystem'],d["package_name"]]}.uniq
+    dependencies.map{|d| d["dependencies"]}.flatten.select{|d| d['direct'] }.map{|d| [d['ecosystem'],d["package_name"]]}.uniq
   end
 
   def fetch_dependent_repos
@@ -187,5 +208,54 @@ class Project < ApplicationRecord
     end
     self.dependent_repos = dependent_repos.uniq
     self.save
+  end
+
+  def score
+    score_parts.sum
+  end
+
+  def score_parts
+    [
+      repository_score,
+      # packages_score,
+      commits_score,
+      dependencies_score,
+      events_score
+    ]
+  end
+
+  def repository_score
+    return 0 unless repository.present?
+    Math.log [
+      (repository['stargazers_count'] || 0),
+      (repository['open_issues_count'] || 0)
+    ].sum
+  end
+
+  def packages_score
+    return 0 unless packages.present?
+    Math.log [
+      packages.map{|p| p["downloads"] || 0 }.sum,
+      packages.map{|p| p["dependent_packages_count"] || 0 }.sum,
+      packages.map{|p| p["dependent_repos_count"] || 0 }.sum,
+      packages.map{|p| p['maintainers'].map{|m| m['uuid'] } }.flatten.uniq.length
+    ].sum
+  end
+
+  def commits_score
+    return 0 unless commits.present?
+    Math.log [
+      (commits['total_committers'] || 0),
+    ].sum
+  end
+
+  def dependencies_score
+    return 0 unless dependencies.present?
+    0
+  end
+
+  def events_score
+    return 0 unless events.present?
+    0
   end
 end
