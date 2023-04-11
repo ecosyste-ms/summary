@@ -23,7 +23,8 @@
   </p>
 
   <p class="card-subtitle mb-2 text-muted"><i><small>
-      Last synced: <%= distance_of_time_in_words_to_now @project.updated_at %> ago
+      Last synced: <%= distance_of_time_in_words_to_now @project.updated_at %> ago <br>
+      <%= link_to 'JSON resprestentation', api_v1_project_path(@project) %>
   </small></i></p>
 
   <% if @project.repository %>
