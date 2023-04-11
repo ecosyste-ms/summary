@@ -10,6 +10,10 @@
         <p class="card-subtitle mb-2 text-muted">
           <%= collection.description %>
         </p>
+        <p class="card-subtitle mb-2 text-muted">
+          <i><small>
+            <%= number_with_delimiter collection.projects.count %> projects
+          </small></i>
         <p class="card-subtitle mb-2 text-muted"><i><small>
           Last synced: <%= collection.updated_at.strftime("%d %b %Y") %>
         </small></i></p>

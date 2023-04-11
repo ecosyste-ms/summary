@@ -5,16 +5,21 @@
       <input name='url' type="text" class="form-control" id="url" placeholder="URL: eg https://github.com/ecosyste-ms/packages" size="50">
     </div>
     <div class="col-auto">
-      <button type="submit" class="btn btn-primary mb-3">Parse</button>
+      <button type="submit" class="btn btn-primary mb-3">Summarize</button>
     </div>
   </form>
 </div>
 
 <div class="container-md">
-  <h1 class='mb-4'>
-    Recently scanned projects
-  </h1>
-  
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <%= link_to 'Projects', projects_path, class: 'nav-link active' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Collections', collections_path, class: 'nav-link ' %>
+    </li>
+  </ul>
+
   <%= render @projects %>
   <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>  
 </div>
