@@ -4,7 +4,16 @@ class ProjectsController < ApplicationController
   end
 
   def index
-    @scope = Project.all.order('created_at DESC')
+    @scope = Project.all.where.not(last_synced_at: nil).order('created_at DESC')
     @pagy, @projects = pagy(@scope)
+  end
+
+  def lookup
+    @project = Project.find_by(url: params[:url])
+    if @project.nil?
+      @project = Project.create(url: params[:url])
+      @project.sync_async
+    end
+    redirect_to @project
   end
 end

@@ -10,7 +10,7 @@ class Api::V1::CollectionsController < Api::V1::ApplicationController
 
   def projects
     @collection = Collection.find(params[:id])
-    @projects = @collection.projects
+    @projects = @collection.projects.where.not(last_synced_at: nil)
     @pagy, @projects = pagy(@projects)
     render 'api/v1/projects/index'
   end

@@ -22,7 +22,7 @@
         <% end %>
 
         <p class="card-subtitle mb-2 text-muted"><i><small>
-          Last synced: <%= project.updated_at.strftime("%d %b %Y") %>
+          Last synced: <%= project.last_synced_at.strftime("%d %b %Y") %>
         </small></i></p>
       </div>
       <div class="flex-shrink-0">
