@@ -223,13 +223,13 @@ class Project < ApplicationRecord
   end
 
   def score
-    score_parts.sum
+    @score ||= score_parts.sum
   end
 
   def score_parts
     [
       repository_score,
-      # packages_score,
+      packages_score,
       commits_score,
       dependencies_score,
       events_score
