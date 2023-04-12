@@ -4,7 +4,7 @@ class ProjectsController < ApplicationController
   end
 
   def index
-    @scope = Project.all.where.not(last_synced_at: nil).order('created_at DESC')
+    @scope = Project.all.where.not(last_synced_at: nil).where.not(repository: nil).order('created_at DESC')
     @pagy, @projects = pagy(@scope)
   end
 
