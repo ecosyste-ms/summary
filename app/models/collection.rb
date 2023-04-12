@@ -64,6 +64,19 @@ class Collection < ApplicationRecord
     end
   end
 
+  def import_org(host, org)
+    resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{host}/owners/#{org}/repositories?per_page=1000")
+    if resp.status == 200
+      data = JSON.parse(resp.body)
+      urls = data.map{|p| p['html_url'] }.uniq.reject(&:blank?)
+      urls.each do |url|
+        puts url
+        project = projects.find_or_create_by(url: url)
+        project.sync_async unless project.last_synced_at.present?
+      end
+    end
+  end
+
   def import_tag(tag)
     import_keyword(tag)
     import_topic(tag)
