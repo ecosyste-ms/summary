@@ -2,7 +2,7 @@ class CollectionsController < ApplicationController
   def show
     @collection = Collection.find(params[:id])
 
-    scope = @collection.projects.order('id asc')
+    scope = @collection.projects.order('id asc').where.not(last_synced_at: nil)
 
     scope = scope.reject{|p| p.repository.present? && p.repository['source_name'].present? && p.repository['stargazers_count'] == 0 }
 
