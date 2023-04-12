@@ -30,7 +30,7 @@ gem 'sitemap_generator'
 gem 'sidekiq'
 gem 'sidekiq-unique-jobs'
 gem 'sidekiq-status'
-gem 'google-protobuf', '3.22.1'
+gem 'google-protobuf', '3.22.2'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
