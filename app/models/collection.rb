@@ -15,6 +15,16 @@ class Collection < ApplicationRecord
     projects.map(&:committers_names).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
   end
 
+  def commits
+    hash = Hash.new{|h,k| h[k] = 0}
+    projects.map(&:committers).each do |committers|
+      committers.each do |k,v|
+        hash[k] += v
+      end
+    end
+    hash.sort_by{|k,v| v}.reverse
+  end
+
   def committers_projects(name)
     projects.select{|p| p.committers_names.include?(name) }
   end

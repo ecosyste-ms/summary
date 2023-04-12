@@ -187,6 +187,12 @@ class Project < ApplicationRecord
     commits["committers"].map{|c| c["name"]}.uniq
   end
 
+  def committers
+    return [] unless commits.present?
+    return [] unless commits["committers"].present?
+    commits["committers"].map{|c| [c["name"], c["count"]]}.each_with_object(Hash.new {|h,k| h[k] = 0}) { |(x,d),h| h[x] += d }
+  end
+
   def fetch_dependencies
     return unless repository.present?
     conn = Faraday.new(url: repository['manifests_url']) do |faraday|
