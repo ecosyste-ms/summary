@@ -73,5 +73,16 @@ class Collection < ApplicationRecord
     projects.group_by(&:url).each do |url, projects|
       projects[1..-1].each(&:destroy)
     end
+    return nil
+  end
+
+  def remove_uninteresting_forks
+    projects.each do |project|
+      if project.repository.present? && project.repository['source_name'].present? && project.repository['stargazers_count'] == 0
+        puts "Removing #{project.url}"
+        project.destroy
+      end
+    end
+    return nil
   end
 end
