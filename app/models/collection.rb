@@ -15,6 +15,10 @@ class Collection < ApplicationRecord
     projects.map(&:committers_names).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
   end
 
+  def languages
+    projects.map(&:language).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
+  end
+
   def commits
     hash = Hash.new{|h,k| h[k] = 0}
     projects.map(&:committers).each do |committers|

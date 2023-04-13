@@ -4,7 +4,9 @@ class CollectionsController < ApplicationController
 
     scope = @collection.projects.order('id asc').where.not(last_synced_at: nil)
 
-    scope = scope.reject{|p| p.repository.present? && p.repository['source_name'].present? && p.repository['stargazers_count'] == 0 }
+    if params[:language].present?
+      scope = scope.language(params[:language])
+    end
 
     if params[:keyword].present?
       scope = scope.where("keywords @> ARRAY[?]::varchar[]", params[:keyword])
@@ -17,6 +19,8 @@ class CollectionsController < ApplicationController
     if params[:dependency].present?
       scope = @collection.dependency_projects(params[:dependency])
     end
+
+    scope = scope.reject{|p| p.repository.present? && p.repository['source_name'].present? && p.repository['stargazers_count'] == 0 }
 
     @pagy, @projects = pagy_array(scope.to_a.sort_by(&:score).reverse)
   end

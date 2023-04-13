@@ -5,6 +5,8 @@ class Project < ApplicationRecord
   belongs_to :collection, optional: true
   counter_culture :collection
 
+  scope :language, ->(language) { where("(repository ->> 'language') = ?", language) }
+
   def self.sync_least_recently_synced
     Project.where(last_synced_at: nil).or(Project.where("last_synced_at < ?", 1.day.ago)).order('last_synced_at asc nulls first').limit(50).each do |project|
       project.sync_async
@@ -275,5 +277,10 @@ class Project < ApplicationRecord
   def events_score
     return 0 unless events.present?
     0
+  end
+
+  def language
+    return unless repository.present?
+    repository['language']
   end
 end
