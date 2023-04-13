@@ -32,6 +32,7 @@ class Project < ApplicationRecord
     fetch_commits
     fetch_events
     update(last_synced_at: Time.now)
+    ping
   end
 
   def sync_async
