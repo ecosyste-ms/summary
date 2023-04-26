@@ -26,7 +26,7 @@
 
     <p class="card-subtitle mb-2 text-muted"><i><small>
         Last synced: <%= distance_of_time_in_words_to_now @project.last_synced_at %> ago <br>
-        <%= link_to 'JSON resprestentation', api_v1_project_path(@project) %>
+        <%= link_to 'JSON representation', api_v1_project_path(@project) %>
     </small></i></p>
 
     <%= render 'repository' %>
