@@ -166,6 +166,8 @@ components:
             type: object
         commits:
           type: object
+        issues:
+          type: object
         events:
           type: object
         keywords:

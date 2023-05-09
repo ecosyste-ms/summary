@@ -31,6 +31,7 @@ class Project < ApplicationRecord
     combine_keywords
     fetch_commits
     fetch_events
+    fetch_issues
     update(last_synced_at: Time.now)
     ping
   end
@@ -229,6 +230,32 @@ class Project < ApplicationRecord
     end
     self.dependent_repos = dependent_repos.uniq
     self.save
+  end
+
+  def issues_api_url
+    "https://issues.ecosyste.ms/api/v1/repositories/lookup?url=#{url}"
+  end
+
+  def issues_url
+    "https://issues.ecosyste.ms/repositories/lookup?url=#{url}"
+  end
+
+  def fetch_issues
+    conn = Faraday.new(url: issues_api_url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+    response = conn.get
+    return unless response.success?
+    self.issues = JSON.parse(response.body)
+    self.save
+  rescue
+    puts "Error fetching issues for #{url}"
+  end
+
+  def issues
+    i = read_attribute(:issues) || {}
+    JSON.parse(i.to_json, object_class: OpenStruct)
   end
 
   def score
