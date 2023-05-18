@@ -286,6 +286,8 @@ class Project < ApplicationRecord
       packages.map{|p| p["downloads"] || 0 }.sum,
       packages.map{|p| p["dependent_packages_count"] || 0 }.sum,
       packages.map{|p| p["dependent_repos_count"] || 0 }.sum,
+      packages.map{|p| p["docker_downloads_count"] || 0 }.sum,
+      packages.map{|p| p["docker_dependents_count"] || 0 }.sum,
       packages.map{|p| p['maintainers'].map{|m| m['uuid'] } }.flatten.uniq.length
     ].sum
   end
