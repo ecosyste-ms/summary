@@ -12,37 +12,37 @@
       <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>  
     </div>
     <div class='col-md-4'>
-      <div class='card mb-3'>
-        <div class="card-header">
-          Keywords
-        </div>
-        <div class="list-group list-group-flush">
-          <% @collection.keywords.first(50).each do |keyword, count| %>
-            <% next if keyword.blank? %>
-            <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword == params[:keyword]%>" href="<%= collection_path(@collection, keyword: keyword) %>">
-              <%= keyword %>
-              <span class="badge bg-primary rounded-pill"><%= number_with_delimiter count%></span>
-            </a>
-          <% end %>
-        </div>
-      </div>
-
-      <div class='card mb-3'>
-        <div class="card-header">
-          Languages
-        </div>
-        <div class="list-group list-group-flush">
-          <% @collection.languages.first(50).each do |keyword, count| %>
-            <% next if keyword.blank? %>
-            <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword == params[:language]%>" href="<%= collection_path(@collection, language: keyword) %>">
-              <%= keyword %>
-              <span class="badge bg-primary rounded-pill"><%= number_with_delimiter count%></span>
-            </a>
-          <% end %>
-        </div>
-      </div>
-
       <% if @collection.projects_count < 2000 %>
+        <div class='card mb-3'>
+          <div class="card-header">
+            Keywords
+          </div>
+          <div class="list-group list-group-flush">
+            <% @collection.keywords.first(50).each do |keyword, count| %>
+              <% next if keyword.blank? %>
+              <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword == params[:keyword]%>" href="<%= collection_path(@collection, keyword: keyword) %>">
+                <%= keyword %>
+                <span class="badge bg-primary rounded-pill"><%= number_with_delimiter count%></span>
+              </a>
+            <% end %>
+          </div>
+        </div>
+
+        <div class='card mb-3'>
+          <div class="card-header">
+            Languages
+          </div>
+          <div class="list-group list-group-flush">
+            <% @collection.languages.first(50).each do |keyword, count| %>
+              <% next if keyword.blank? %>
+              <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword == params[:language]%>" href="<%= collection_path(@collection, language: keyword) %>">
+                <%= keyword %>
+                <span class="badge bg-primary rounded-pill"><%= number_with_delimiter count%></span>
+              </a>
+            <% end %>
+          </div>
+        </div>
+
         <div class='card mb-3'>
           <div class="card-header">
             Committers
