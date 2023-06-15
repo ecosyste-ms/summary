@@ -33,6 +33,7 @@ class Project < ApplicationRecord
     fetch_events
     fetch_issues
     update(last_synced_at: Time.now)
+    update_score
     ping
   end
 
@@ -258,8 +259,8 @@ class Project < ApplicationRecord
     JSON.parse(i.to_json, object_class: OpenStruct)
   end
 
-  def score
-    @score ||= score_parts.sum
+  def update_score
+    update_attribute :score, score_parts.sum
   end
 
   def score_parts

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_09_102834) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_15_064058) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -37,6 +37,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_09_102834) do
     t.json "dependencies"
     t.datetime "last_synced_at"
     t.json "issues"
+    t.float "score", default: 0.0
     t.index ["collection_id"], name: "index_projects_on_collection_id"
   end
 

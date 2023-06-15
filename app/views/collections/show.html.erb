@@ -95,7 +95,7 @@
           <p class='card-text'>
             <ul>
               <li>
-                Projects: <%= @collection.projects.count %>
+                Projects: <%= number_with_delimiter @collection.projects.count %>
               </li>
               <li>
                 Last updated: <%= distance_of_time_in_words_to_now @collection.updated_at %> ago

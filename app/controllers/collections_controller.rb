@@ -2,7 +2,7 @@ class CollectionsController < ApplicationController
   def show
     @collection = Collection.find(params[:id])
 
-    scope = @collection.projects.order('id asc').where.not(last_synced_at: nil)
+    scope = @collection.projects.order('score desc').where.not(last_synced_at: nil)
 
     if params[:language].present?
       scope = scope.language(params[:language])
@@ -20,9 +20,9 @@ class CollectionsController < ApplicationController
       scope = @collection.dependency_projects(params[:dependency])
     end
 
-    scope = scope.reject{|p| p.repository.present? && p.repository['source_name'].present? && p.repository['stargazers_count'] == 0 }
+    # scope = scope.reject{|p| p.repository.present? && p.repository['source_name'].present? && p.repository['stargazers_count'] == 0 }
 
-    @pagy, @projects = pagy_array(scope.to_a.sort_by(&:score).reverse)
+    @pagy, @projects = pagy_array(scope)
   end
 
   def index
