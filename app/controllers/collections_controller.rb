@@ -20,9 +20,11 @@ class CollectionsController < ApplicationController
       scope = @collection.dependency_projects(params[:dependency])
     end
 
-    # scope = scope.reject{|p| p.repository.present? && p.repository['source_name'].present? && p.repository['stargazers_count'] == 0 }
-
-    @pagy, @projects = pagy_array(scope)
+    if params[:language].present? || params[:keyword].present? || params[:committer].present? || params[:dependency].present?
+      @pagy, @projects = pagy_array(scope)
+    else  
+      @pagy, @projects = pagy_countless(scope)
+    end
   end
 
   def index
