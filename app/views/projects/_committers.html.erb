@@ -43,7 +43,7 @@
         <% @project.commits['committers'].first(30).each do |committer| %>
           <tr>
             <td><%= committer['name'] %></td>
-            <td><%= committer['email'] %></td>
+            <td><%= obfusticate_email(committer['email']) %></td>
             <td><%= committer['count'] %></td>
           </tr>
         <% end %>
