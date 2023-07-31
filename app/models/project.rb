@@ -189,13 +189,13 @@ class Project < ApplicationRecord
   def committers_names
     return [] unless commits.present?
     return [] unless commits["committers"].present?
-    commits["committers"].map{|c| c["name"]}.uniq
+    commits["committers"].map{|c| c["name"].downcase }.uniq
   end
 
   def committers
     return [] unless commits.present?
     return [] unless commits["committers"].present?
-    commits["committers"].map{|c| [c["name"], c["count"]]}.each_with_object(Hash.new {|h,k| h[k] = 0}) { |(x,d),h| h[x] += d }
+    commits["committers"].map{|c| [c["name"].downcase, c["count"]]}.each_with_object(Hash.new {|h,k| h[k] = 0}) { |(x,d),h| h[x] += d }
   end
 
   def fetch_dependencies
