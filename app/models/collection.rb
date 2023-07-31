@@ -26,7 +26,7 @@ class Collection < ApplicationRecord
           committer['github'] = ''
         end
 
-        committer['bot'] = committer['name'].include?('[bot]')
+        committer['bot'] = committer['name'].include?('[bot]') || committer['name'].downcase.ends_with?('bot') 
 
         committers[committer['name'].downcase] ||= committer
         committers[committer['name'].downcase]['count'] ||= 0
