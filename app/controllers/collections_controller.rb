@@ -1,3 +1,4 @@
+require 'csv'
 class CollectionsController < ApplicationController
   def show
     @collection = Collection.find(params[:id])
@@ -30,6 +31,19 @@ class CollectionsController < ApplicationController
   def committers
     @collection = Collection.find(params[:id])
     @pagy, @committers = pagy_array(@collection.committer_details)
+  end
+
+  def committers_csv
+    @collection = Collection.find(params[:id])
+    @committers = @collection.committer_details
+    csv_string = CSV.generate do |csv|
+      csv << ["Name", "Email", "GitHub", "Commits", "Unique Projects", "Projects", "Bot"]
+      @committers.each do |committer|
+        csv << [committer['name'], committer['email'], committer['github'], committer['count'], committer['projects'].length, committer['projects'].map(&:first).join(', '), committer['bot']]
+      end
+    end
+
+    send_data csv_string, filename: "#{@collection.name}-committers.csv" , content_type: 'text/csv'
   end
 
   def index

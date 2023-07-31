@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   resources :collections, only: [:index, :show] do
     member do
       get :committers
+      get :committers_csv
     end
   end
 

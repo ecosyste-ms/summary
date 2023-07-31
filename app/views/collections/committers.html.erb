@@ -4,6 +4,9 @@
     <%= link_to @collection.name, collection_path(@collection) %> - Committers
   </h1>
 
+  <p class='text-muted'>
+    <%= link_to 'Export all as CSV', committers_csv_collection_path(@collection) %>
+  </p>
 
   <table class='table'>
     <thead>
