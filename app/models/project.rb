@@ -71,7 +71,7 @@ class Project < ApplicationRecord
   end
 
   def ping_urls
-    ([repos_ping_url] + packages_ping_urls).compact.uniq
+    ([repos_ping_url] + packages_ping_urls + [owner_ping_url]).compact.uniq
   end
 
   def repos_ping_url
@@ -84,6 +84,11 @@ class Project < ApplicationRecord
     packages.map do |package|
       "https://packages.ecosyste.ms/api/v1/registries/#{package['registry']['name']}/packages/#{package['name']}/ping"
     end
+  end
+
+  def owner_ping_url
+    return unless repository.present?
+    "https://repos.ecosyste.ms/api/v1/hosts/#{repository['host']['name']}/owner/#{repository['owner']}/ping"
   end
 
   def description
