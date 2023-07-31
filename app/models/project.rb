@@ -26,6 +26,7 @@ class Project < ApplicationRecord
   def sync
     check_url
     fetch_repository
+    fetch_owner
     fetch_dependencies
     fetch_packages
     combine_keywords
@@ -106,6 +107,29 @@ class Project < ApplicationRecord
     self.save
   rescue
     puts "Error fetching repository for #{url}"
+  end
+
+  def owner_url
+    return unless repository.present?
+    return unless repository["owner"].present?
+    return unless repository["host"].present?
+    return unless repository["host"]["name"].present?
+    "https://repos.ecosyste.ms/api/v1/hosts/#{repository['host']['name']}/owners/#{repository['owner']}"
+  end
+
+  def fetch_owner
+    return unless owner_url.present?
+    conn = Faraday.new(url: owner_url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
+    response = conn.get
+    return unless response.success?
+    self.owner = JSON.parse(response.body)
+    self.save
+  rescue
+    puts "Error fetching owner for #{url}"
   end
 
   def timeline_url
@@ -319,5 +343,10 @@ class Project < ApplicationRecord
   def language
     return unless repository.present?
     repository['language']
+  end
+
+  def owner_name
+    return unless repository.present?
+    repository['owner']
   end
 end

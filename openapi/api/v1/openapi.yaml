@@ -160,6 +160,8 @@ components:
           format: date-time
         repository:
           type: object
+        owner:
+          type: object
         packages:
           type: array
           items:
