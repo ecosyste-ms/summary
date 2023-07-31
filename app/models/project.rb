@@ -198,6 +198,12 @@ class Project < ApplicationRecord
     commits["committers"].map{|c| [c["name"].downcase, c["count"]]}.each_with_object(Hash.new {|h,k| h[k] = 0}) { |(x,d),h| h[x] += d }
   end
 
+  def raw_committers
+    return [] unless commits.present?
+    return [] unless commits["committers"].present?
+    commits["committers"]
+  end
+
   def fetch_dependencies
     return unless repository.present?
     conn = Faraday.new(url: repository['manifests_url']) do |faraday|

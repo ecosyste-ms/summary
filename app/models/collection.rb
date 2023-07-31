@@ -15,6 +15,30 @@ class Collection < ApplicationRecord
     projects.map(&:committers_names).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
   end
 
+  def committer_details
+    committers = {}
+    projects.each do |project|
+      project.raw_committers.each do |committer|
+
+        if committer['email'].match('@users.noreply.github.com') && !committer['email'].include?('[bot]')
+          committer['github'] = committer['email'].gsub('@users.noreply.github.com', '').split('+').last
+        else
+          committer['github'] = ''
+        end
+
+        committer['bot'] = committer['name'].include?('[bot]')
+
+        committers[committer['name'].downcase] ||= committer
+        committers[committer['name'].downcase]['count'] ||= 0
+        committers[committer['name'].downcase]['count'] += committer['count']
+        committers[committer['name'].downcase]['projects'] ||= {}
+        committers[committer['name'].downcase]['projects'][project.url] ||= 0
+        committers[committer['name'].downcase]['projects'][project.url] += committer['count']
+      end
+    end
+    committers.values.sort_by{|c| c['projects'].length}.reverse
+  end
+
   def languages
     projects.map(&:language).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
   end

@@ -27,6 +27,11 @@ class CollectionsController < ApplicationController
     end
   end
 
+  def committers
+    @collection = Collection.find(params[:id])
+    @pagy, @committers = pagy_array(@collection.committer_details)
+  end
+
   def index
     @scope = Collection.all
     @pagy, @collections = pagy(@scope)

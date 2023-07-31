@@ -25,7 +25,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :collections, only: [:index, :show]
+  resources :collections, only: [:index, :show] do
+    member do
+      get :committers
+    end
+  end
 
   resources :projects, constraints: { id: /.*/ }, only: [:index, :show] do
     collection do
