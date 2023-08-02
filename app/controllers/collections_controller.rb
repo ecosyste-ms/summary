@@ -39,7 +39,7 @@ class CollectionsController < ApplicationController
     csv_string = CSV.generate do |csv|
       csv << ["Name", "Email", "GitHub", "Commits", "Unique Projects", "Projects", "Bot"]
       @committers.each do |committer|
-        csv << [committer['name'], committer['email'], committer['github'], committer['count'], committer['projects'].length, committer['projects'].map(&:first).join(', '), committer['bot']]
+        csv << [committer['name'], committer['email'], committer['login'], committer['count'], committer['projects'].length, committer['projects'].map(&:first).join(', '), committer['bot']]
       end
     end
 

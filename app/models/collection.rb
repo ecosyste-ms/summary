@@ -21,9 +21,7 @@ class Collection < ApplicationRecord
       project.raw_committers.each do |committer|
 
         if committer['email'].match('@users.noreply.github.com') && !committer['email'].include?('[bot]')
-          committer['github'] = committer['email'].gsub('@users.noreply.github.com', '').split('+').last
-        else
-          committer['github'] = ''
+          committer['login'] = committer['email'].gsub('@users.noreply.github.com', '').split('+').last
         end
 
         committer['bot'] = committer['name'].include?('[bot]') || committer['name'].downcase.ends_with?('bot') || committer['name'].downcase == 'github actions'

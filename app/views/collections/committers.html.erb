@@ -24,7 +24,7 @@
         <tr>
           <td><%= committer['name'] %></td>
           <td><%= obfusticate_email committer['email']  %></td>
-          <td><%= link_to_unless committer['github'].blank?, committer['github'], 'https://github.com/'+committer['github'] %></td>
+          <td><%= link_to_unless committer['login'].blank?, committer['login'], "https://github.com/#{committer['login']}" %></td>
           <td><%= committer['count'] %></td>
           <td><span title='<%= committer['projects'].sort_by(&:last).map(&:first).join(', ') %>'><%= committer['projects'].length %></span></td>
         </tr>
