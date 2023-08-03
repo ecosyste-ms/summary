@@ -21,7 +21,11 @@ Rails.application.routes.draw do
           get :projects
         end
       end
-      resources :projects, constraints: { id: /.*/ }, only: [:index, :show]
+      resources :projects, constraints: { id: /.*/ }, only: [:index, :show] do
+        collection do
+          get :lookup
+        end
+      end
     end
   end
 

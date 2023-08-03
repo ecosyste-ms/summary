@@ -64,6 +64,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Project'
+  /projects/lookup:
+    get:
+      summary: lookup project by url
+      operationId: lookupProject
+      tags:
+        - projects
+      parameters:
+        - name: url
+          in: query
+          description: url of the project
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Project'
   /collections:
     get:
       summary: get collections

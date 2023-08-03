@@ -7,4 +7,12 @@ class Api::V1::ProjectsController < Api::V1::ApplicationController
   def show
     @project = Project.find(params[:id])
   end
+
+  def lookup
+    @project = Project.find_by(url: params[:url])
+    if @project.nil?
+      @project = Project.create(url: params[:url])
+      @project.sync_async
+    end
+  end
 end
