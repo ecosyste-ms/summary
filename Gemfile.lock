@@ -66,7 +66,7 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    addressable (2.8.4)
+    addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
     autoprefixer-rails (10.4.13.0)
       execjs (~> 2)
@@ -228,7 +228,7 @@ GEM
     rake (13.0.6)
     redis (5.0.6)
       redis-client (>= 0.9.0)
-    redis-client (0.14.1)
+    redis-client (0.15.0)
       connection_pool
     reline (0.3.7)
       io-console (~> 0.5)
@@ -291,7 +291,7 @@ GEM
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    zeitwerk (2.6.10)
+    zeitwerk (2.6.11)
 
 PLATFORMS
   aarch64-linux-musl
