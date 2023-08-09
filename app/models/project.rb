@@ -8,7 +8,7 @@ class Project < ApplicationRecord
   scope :language, ->(language) { where("(repository ->> 'language') = ?", language) }
 
   def self.sync_least_recently_synced
-    Project.where(last_synced_at: nil).or(Project.where("last_synced_at < ?", 1.day.ago)).order('last_synced_at asc nulls first').limit(50).each do |project|
+    Project.where(last_synced_at: nil).or(Project.where("last_synced_at < ?", 1.day.ago)).order('last_synced_at asc nulls first').limit(500).each do |project|
       project.sync_async
     end
   end
