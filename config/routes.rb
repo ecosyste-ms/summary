@@ -25,6 +25,9 @@ Rails.application.routes.draw do
         collection do
           get :lookup
         end
+        member do
+          get :ping
+        end
       end
     end
   end

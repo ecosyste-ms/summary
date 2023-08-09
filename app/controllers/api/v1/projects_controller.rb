@@ -15,4 +15,9 @@ class Api::V1::ProjectsController < Api::V1::ApplicationController
       @project.sync_async
     end
   end
+
+  def ping
+    @project = Project.find(params[:id])
+    @project.sync_async
+  end
 end
