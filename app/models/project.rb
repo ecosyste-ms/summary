@@ -354,4 +354,9 @@ class Project < ApplicationRecord
     return unless repository.present?
     repository['owner']
   end
+
+  def avatar_url
+    return unless repository.present?
+    repository['icon_url']
+  end
 end
