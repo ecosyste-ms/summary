@@ -6,7 +6,7 @@
   
   <h5>Total</h5>
   <ul>
-    <% @project.events['total'].each do |k,v| %>
+    <% @project.events['total'].sort_by{|k,v| k}.each do |k,v| %>
       <li>
         <%= k.underscore.humanize %>: <%= v %>
       </li>
@@ -14,7 +14,7 @@
   </ul>
   <h5>Last Year</h5>
   <ul>
-    <% @project.events['last_year'].each do |k,v| %>
+    <% @project.events['last_year'].sort_by{|k,v| k}.each do |k,v| %>
       <li>
         <%= k.underscore.humanize %>: <%= v %>
       </li>
