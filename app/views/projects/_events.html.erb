@@ -11,6 +11,9 @@
         <%= k.underscore.humanize %>: <%= v %>
       </li>
     <% end %>
+    <li>
+      Total: <%= @project.events['total'].sum{|k,v| v} %>
+    </li>
   </ul>
   <h5>Last Year</h5>
   <ul>
@@ -19,5 +22,8 @@
         <%= k.underscore.humanize %>: <%= v %>
       </li>
     <% end %>
+    <li>
+      Total: <%= @project.events['last_year'].sum{|k,v| v} %>
+    </li>
   </ul>
 <% end %>
