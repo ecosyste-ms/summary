@@ -31,4 +31,26 @@ namespace :projects do
   task :sync => :environment do
     Project.sync_least_recently_synced
   end
+
+  desc 'import psopensci projects'
+  task :psopensci => :environment do
+    collection = Collection.find_or_create_by!(name: 'pyOpenSci', url: 'https://www.pyopensci.org/')
+
+    url = 'https://raw.githubusercontent.com/pyOpenSci/pyopensci.github.io/main/_data/packages.yml'
+
+    conn = Faraday.new(url: url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
+    resp = conn.get
+
+    yaml = YAML.load(resp.body, permitted_classes: [Date, Time])
+
+    yaml.each_with_index do |row, i|
+      puts row['repository_link']
+      project = collection.projects.find_or_create_by!(url: row['repository_link'])
+      project.sync
+    end
+  end
 end
