@@ -26,6 +26,7 @@ class Project < ApplicationRecord
 
   def sync
     check_url
+    return unless self.persisted?
     fetch_repository
     fetch_owner
     fetch_dependencies
@@ -51,8 +52,15 @@ class Project < ApplicationRecord
 
     response = conn.get
     return unless response.success?
-    update(url: response.env.url.to_s) 
-    # TODO avoid duplicates
+
+    new_name = response.env.url.to_s
+    return if new_name == url
+    existing_projects = Project.where(url: new_name)
+    if existing_projects.present?
+      self.destroy
+    else
+      update(url: response.env.url.to_s) 
+    end
   rescue
     # failed to load
   end
