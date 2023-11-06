@@ -369,4 +369,13 @@ class Project < ApplicationRecord
     return unless repository.present?
     repository['icon_url']
   end
+
+  def self.clean_up_duplicates
+    Project.group(:url).having("count(*) > 1").count.each do |url, count|
+      projects = Project.where(url: url).order('last_synced_at asc nulls first')
+      projects[1..-1].each do |project|
+        project.destroy
+      end
+    end
+  end
 end
