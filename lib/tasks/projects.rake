@@ -61,7 +61,6 @@ namespace :projects do
       puts new_name
       p = collection.projects.find_or_create_by!(url: new_name)
       p.sync_async
-
     end
 
     puts 
@@ -70,11 +69,11 @@ namespace :projects do
     urls.sort.each do |url|
       next if url.include?('github.com') == false
       next if url.gsub('https://github.com/', '').split('/').length > 1
-      # skip for now
+      collection.import_org('GitHub', url.gsub('https://github.com/', ''))
     end
 
-    puts
-    puts "non-github"
+    # puts
+    # puts "non-github"
 
     urls.sort.each do |url|
       next if url.include?('github.com') == true
