@@ -83,8 +83,9 @@ class Project < ApplicationRecord
   def packages_ping_urls
     return [] unless packages.present?
     packages.map do |package|
-      "https://packages.ecosyste.ms/api/v1/registries/#{package['registry']['name']}/packages/#{package['name']}/ping"
-    end
+      ["https://packages.ecosyste.ms/api/v1/registries/#{package['registry']['name']}/packages/#{package['name']}/ping",
+      "https://repos.ecosyste.ms/api/v1/usage/#{package['ecosystem']}/#{package['name']}/ping"]
+    end.flatten
   end
 
   def owner_ping_url
