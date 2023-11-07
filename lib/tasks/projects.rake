@@ -7,6 +7,7 @@ namespace :projects do
     
     urls = Set.new
 
+    # TODO refactor to dynamically use offset
     json = load_osc_projects(0)
   
     json['data']['account']['memberOf']["nodes"].each do |row|
