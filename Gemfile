@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.2.2"
+ruby "3.3.0"
 
 gem "rails", "~> 7.1.1"
 gem "sprockets-rails"
@@ -30,7 +30,7 @@ gem 'sitemap_generator'
 gem 'sidekiq'
 gem 'sidekiq-unique-jobs'
 gem 'sidekiq-status'
-gem 'google-protobuf', '3.25.1'
+gem 'google-protobuf'
 gem 'groupdate'
 
 group :development, :test do
