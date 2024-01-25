@@ -32,6 +32,7 @@ gem 'sidekiq-unique-jobs'
 gem 'sidekiq-status'
 gem 'google-protobuf'
 gem 'groupdate'
+gem 'redis'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
