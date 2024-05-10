@@ -32,6 +32,7 @@ gem 'sidekiq-status'
 gem 'google-protobuf'
 gem 'groupdate'
 gem 'redis'
+gem 'csv'
 
 group :development, :test do
   gem 'dotenv-rails'

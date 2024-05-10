@@ -99,6 +99,7 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
+    csv (3.3.0)
     date (3.3.4)
     dotenv (3.1.2)
     dotenv-rails (3.1.2)
@@ -333,6 +334,7 @@ DEPENDENCIES
   bootsnap
   bootstrap
   counter_culture
+  csv
   dotenv-rails
   faraday
   faraday-follow_redirects
