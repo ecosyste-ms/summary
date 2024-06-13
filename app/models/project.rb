@@ -365,6 +365,11 @@ class Project < ApplicationRecord
     repository['owner']
   end
 
+  def host
+    return unless repository.present?
+    repository['host']['name']
+  end
+
   def avatar_url
     return unless repository.present?
     repository['icon_url']

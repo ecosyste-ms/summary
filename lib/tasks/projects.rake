@@ -184,4 +184,27 @@ namespace :projects do
       project.sync
     end
   end
+
+  desc 'import top 100 ruby projects'
+  task :ruby => :environment do
+    collection = Collection.find_or_create_by!(name: 'Top Ruby Gems', url: 'https://www.ruby-lang.org/')
+
+    url = 'https://packages.ecosyste.ms/api/v1/registries/rubygems.org/packages?per_page=100&sort=downloads'
+
+    conn = Faraday.new(url: url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
+    resp = conn.get
+
+    json = JSON.parse(resp.body)
+
+    json.each do |row|
+      puts row['repository_url']
+      next unless row['repository_url'].blank?
+      project = collection.projects.find_or_create_by!(url: row['repository_url'])
+      project.sync_async
+    end
+  end
 end

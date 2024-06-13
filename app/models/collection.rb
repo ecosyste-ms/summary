@@ -65,6 +65,14 @@ class Collection < ApplicationRecord
     projects.select{|p| p.dependency_packages.include?(dependency.split(':')) }
   end
 
+  def owners
+    projects.map(&:owner_name).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
+  end
+
+  def hosts
+    projects.map(&:host).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
+  end
+
   def import_keyword(keyword)
     resp = Faraday.get("https://packages.ecosyste.ms/api/v1/keywords/#{keyword}?per_page=1000")
     if resp.status == 200
