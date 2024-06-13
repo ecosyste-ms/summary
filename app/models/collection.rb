@@ -65,6 +65,10 @@ class Collection < ApplicationRecord
     projects.select{|p| p.dependency_packages.include?(dependency.split(':')) }
   end
 
+  def owner_projects(owner)
+    projects.select{|p| p.owner_name == owner }
+  end
+
   def owners
     projects.map(&:owner_name).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
   end
