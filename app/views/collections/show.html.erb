@@ -18,7 +18,7 @@
             Keywords
           </div>
           <div class="list-group list-group-flush">
-            <% @collection.keywords.first(50).each do |keyword, count| %>
+            <% @collection.keywords.first(30).each do |keyword, count| %>
               <% next if keyword.blank? %>
               <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword == params[:keyword]%>" href="<%= collection_path(@collection, keyword: keyword) %>">
                 <%= keyword %>
@@ -33,7 +33,7 @@
             Languages
           </div>
           <div class="list-group list-group-flush">
-            <% @collection.languages.first(50).each do |keyword, count| %>
+            <% @collection.languages.first(30).each do |keyword, count| %>
               <% next if keyword.blank? %>
               <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword == params[:language]%>" href="<%= collection_path(@collection, language: keyword) %>">
                 <%= keyword %>
@@ -45,10 +45,29 @@
 
         <div class='card mb-3'>
           <div class="card-header">
+            Most Issues and Pull Requests
+          </div>
+          <div class="list-group list-group-flush">
+            <% @collection.contributors.first(30).each do |login, count| %>
+              <% next if login.blank? %>
+              
+              <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if login == params[:contributor]%>" href="<%= collection_path(@collection, contributor: login) %>">
+                <span>
+                <img class="float-start me-2" src="https://github.com/<%= login %>.png" alt="<%= login %>" width='20' onerror="this.style.display='none'">
+                <%= login %>
+                </span>
+                <span class="badge bg-primary rounded-pill" href='https://github.com/<%= login %>' target='_blank'><%= number_with_delimiter count%></span>
+              </a>
+            <% end %>
+          </div>
+        </div>
+
+        <div class='card mb-3'>
+          <div class="card-header">
             Committers
           </div>
           <div class="list-group list-group-flush">
-            <% @collection.committers.first(50).each do |keyword, count| %>
+            <% @collection.committers.first(30).each do |keyword, count| %>
               <% next if keyword.blank? %>
               <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword == params[:committer]%>" href="<%= collection_path(@collection, committer: keyword) %>">
                 <%= keyword %>
@@ -63,7 +82,7 @@
             Most Commits
           </div>
           <div class="list-group list-group-flush">
-            <% @collection.commits.first(50).each do |keyword, count| %>
+            <% @collection.commits.first(30).each do |keyword, count| %>
               <% next if keyword.blank? %>
               <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword == params[:committer]%>" href="<%= collection_path(@collection, committer: keyword) %>">
                 <%= keyword %>
@@ -78,7 +97,7 @@
             Direct Dependencies
           </div>
           <div class="list-group list-group-flush">
-            <% @collection.dependencies.first(50).each do |keyword, count| %>
+            <% @collection.dependencies.first(30).each do |keyword, count| %>
               <% next if keyword.blank? %>
               <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if keyword.join(':') == params[:dependency]%>" href="<%= collection_path(@collection, dependency: keyword.join(':')) %>">
                 <%= keyword.join ':' %>
@@ -96,7 +115,11 @@
             <% @collection.owners.first(50).each do |owner, count| %>
               <% next if owner.blank? %>
               <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= 'active' if owner == params[:owner]%>" href="<%= collection_path(@collection, owner: owner) %>">
-                <%= owner %>
+                <span>
+                  <img class="float-start me-2" src="https://github.com/<%= owner %>.png" alt="<%= owner %>" width='20' onerror="this.style.display='none'">
+                  <%= owner %>
+                </span>
+                
                 <span class="badge bg-primary rounded-pill" href='https://github.com/<%= owner %>' target='_blank'><%= number_with_delimiter count%></span>
               </a>
             <% end %>

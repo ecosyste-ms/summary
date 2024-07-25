@@ -77,6 +77,18 @@ class Collection < ApplicationRecord
     projects.map(&:host).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
   end
 
+  def contributors
+    combined_hash = Hash.new(0)
+    
+    projects.map(&:contributors).each do |contributors|
+      contributors.each do |k,v|
+        combined_hash[k] += v
+      end
+    end
+
+    combined_hash.sort_by{|k,v| v}.reverse
+  end
+
   def import_keyword(keyword)
     resp = Faraday.get("https://packages.ecosyste.ms/api/v1/keywords/#{keyword}?per_page=1000")
     if resp.status == 200

@@ -8,6 +8,7 @@ class Project < ApplicationRecord
   scope :language, ->(language) { where("(repository ->> 'language') = ?", language) }
   scope :owner, ->(owner) { where("(repository ->> 'owner') = ?", owner) }
   scope :with_repository, -> { where.not(repository: nil) }
+  scope :with_issues, -> { where.not(issues: nil) }
 
   def self.sync_least_recently_synced
     Project.where(last_synced_at: nil).or(Project.where("last_synced_at < ?", 1.day.ago)).order('last_synced_at asc nulls first').limit(500).each do |project|
@@ -242,6 +243,28 @@ class Project < ApplicationRecord
     return [] unless commits.present?
     return [] unless commits["committers"].present?
     commits["committers"]
+  end
+
+  def contributors
+    return [] unless issues.present?
+    
+    combined_authors = issue_authors.merge(pull_request_authors) do |key, oldval, newval|
+      oldval + newval
+    end
+    
+    combined_authors
+  end
+
+  def issue_authors
+    return {} unless issues.present?
+    return {} unless issues.issue_authors.present?
+    issues.issue_authors.to_h.map{|k,v| [k.downcase.to_s, v] }.to_h
+  end
+
+  def pull_request_authors
+    return {} unless issues.present?
+    return {} unless issues.pull_request_authors.present?
+    issues.pull_request_authors.to_h.map{|k,v| [k.downcase.to_s, v] }.to_h
   end
 
   def fetch_dependencies
