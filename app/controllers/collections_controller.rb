@@ -29,7 +29,7 @@ class CollectionsController < ApplicationController
       scope = @collection.contributor_projects(params[:contributor])
     end
 
-    if params[:language].present? || params[:keyword].present? || params[:committer].present? || params[:dependency].present? || params[:owner].present?
+    if params[:language].present? || params[:keyword].present? || params[:committer].present? || params[:dependency].present? || params[:owner].present? || params[:contributor].present?
       @pagy, @projects = pagy_array(scope)
     else  
       @pagy, @projects = pagy_countless(scope)
