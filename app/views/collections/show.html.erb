@@ -12,7 +12,7 @@
       <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>  
     </div>
     <div class='col-md-4'>
-      <% if @collection.projects_count < 2000 %>
+      <% if @collection.projects.with_repository.count < 2000 %>
         <div class='card mb-3'>
           <div class="card-header">
             Keywords
