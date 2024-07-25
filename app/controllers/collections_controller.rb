@@ -25,6 +25,10 @@ class CollectionsController < ApplicationController
       scope = @collection.owner_projects(params[:owner])
     end
 
+    if params[:contributor].present? 
+      scope = @collection.contributor_projects(params[:contributor])
+    end
+
     if params[:language].present? || params[:keyword].present? || params[:committer].present? || params[:dependency].present? || params[:owner].present?
       @pagy, @projects = pagy_array(scope)
     else  

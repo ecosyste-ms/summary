@@ -69,6 +69,10 @@ class Collection < ApplicationRecord
     projects.select{|p| p.owner_name == owner }
   end
 
+  def contributor_projects(contributor)
+    projects.select{|p| p.contributors.keys.include?(contributor) }
+  end
+
   def owners
     projects.map(&:owner_name).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
   end
