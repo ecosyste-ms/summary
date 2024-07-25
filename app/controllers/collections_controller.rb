@@ -3,7 +3,7 @@ class CollectionsController < ApplicationController
   def show
     @collection = Collection.find(params[:id])
 
-    scope = @collection.projects.order('score desc').where.not(last_synced_at: nil)
+    scope = @collection.projects.with_repository.order('score desc').where.not(last_synced_at: nil)
 
     if params[:language].present?
       scope = scope.language(params[:language])
