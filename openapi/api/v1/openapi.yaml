@@ -210,6 +210,10 @@ components:
           type: string
         language:
           type: string
+        publiccode:
+          type: object
+        codemeta:
+          type: object
     Collection:
       type: object
       properties:
