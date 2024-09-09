@@ -114,4 +114,21 @@
         <% end %>
       <% end %>
     </ul>
+
+    <% if @project.publiccode.present? %>
+          <h2>
+            PublicCode metadata: 
+          </h2>
+    
+          <%= pretty_print_hash(@project.publiccode) %>
+        <% end %>
+
+    <% if @project.codemeta.present? %>  
+      <h2>
+        CodeMeta metadata: 
+      </h2>
+
+      <%= pretty_print_hash(@project.codemeta) %>
+    <% end %>
+
   <% end %>

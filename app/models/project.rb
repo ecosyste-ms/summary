@@ -37,6 +37,8 @@ class Project < ApplicationRecord
     fetch_commits
     fetch_events
     fetch_issues
+    fetch_publiccode_yml
+    fetch_codemeta_json
     update(last_synced_at: Time.now)
     update_score
     ping
@@ -406,5 +408,72 @@ class Project < ApplicationRecord
         project.destroy
       end
     end
+  end
+
+  def metadata_file_name(file)
+    return unless repository.present?
+    return unless repository['metadata'].present?
+    return unless repository['metadata']['files'].present?
+    repository['metadata']['files'][file]
+  end
+
+  def fetch_file(file_name)
+
+    return unless download_url.present?
+    conn = Faraday.new(url: archive_url(file_name)) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+    response = conn.get
+    return unless response.success?
+    json = JSON.parse(response.body)
+
+    json['contents']
+
+  rescue
+    puts "Error fetching file for #{repository_url}"
+  end
+
+  def file_url(file_name)
+    return unless repository.present?
+    "#{repository['html_url']}/blob/#{repository['default_branch']}/#{file_name}"
+  end
+
+  def download_url
+    return unless repository.present?
+    repository['download_url']
+  end
+
+  def archive_url(path)
+    return unless download_url.present?
+    "https://archives.ecosyste.ms/api/v1/archives/contents?url=#{download_url}&path=#{path}"
+  end
+
+  def fetch_publiccode_yml
+    publiccode_file_name = metadata_file_name('publiccode')
+    return unless publiccode_file_name.present?
+    contents = fetch_file(publiccode_file_name)
+    return unless contents.present?
+    self.publiccode_file = contents
+    self.save
+  end
+
+  def fetch_codemeta_json
+    codemeta_file_name = metadata_file_name('codemeta')
+    return unless codemeta_file_name.present?
+    contents = fetch_file(codemeta_file_name)
+    return unless contents.present?
+    self.codemeta_file = contents
+    self.save
+  end
+
+  def publiccode
+    return unless publiccode_file.present?
+    YAML.safe_load(publiccode_file)
+  end
+
+  def codemeta
+    return unless codemeta_file.present?
+    JSON.parse(codemeta_file)
   end
 end

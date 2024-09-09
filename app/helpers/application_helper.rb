@@ -12,9 +12,41 @@ module ApplicationHelper
   def obfusticate_email(email)
     return unless email
     email.split('@').map do |part|
-      # part.gsub(/./, '*') 
       part.tap { |p| p[1...-1] = "****" }
     end.join('@')
+  end
+
+  def pretty_print_hash(hash)
+    content_tag(:ul) do
+      hash.map do |key, value|
+        content_tag(:li) do
+          humanized_key = key.to_s.underscore.humanize
+          if value.is_a?(Hash)
+            "#{humanized_key}: #{pretty_print_hash(value)}".html_safe
+          elsif value.is_a?(Array)
+            "#{humanized_key}: #{pretty_print_array(value)}".html_safe
+          else
+            "#{humanized_key}: #{value}".html_safe
+          end
+        end
+      end.join.html_safe
+    end
+  end
+  
+  def pretty_print_array(array)
+    content_tag(:ul) do
+      array.map do |value|
+        content_tag(:li) do
+          if value.is_a?(Hash)
+            pretty_print_hash(value).html_safe
+          elsif value.is_a?(Array)
+            pretty_print_array(value).html_safe
+          else
+            value.to_s.html_safe
+          end
+        end
+      end.join.html_safe
+    end
   end
 
   def distance_of_time_in_words_if_present(time)

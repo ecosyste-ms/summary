@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_31_095227) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_09_135241) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -39,7 +39,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_31_095227) do
     t.json "issues"
     t.float "score", default: 0.0
     t.json "owner"
+    t.text "codemeta_file"
+    t.text "publiccode_file"
     t.index ["collection_id"], name: "index_projects_on_collection_id"
   end
-
 end
