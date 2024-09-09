@@ -9,9 +9,9 @@ class ProjectsController < ApplicationController
   end
 
   def lookup
-    @project = Project.find_by(url: params[:url])
+    @project = Project.find_by(url: params[:url].strip)
     if @project.nil?
-      @project = Project.create(url: params[:url])
+      @project = Project.create(url: params[:url].strip)
       @project.sync_async
     end
     redirect_to @project
