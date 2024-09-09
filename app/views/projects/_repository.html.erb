@@ -105,6 +105,7 @@
             Funding: 
             <ul>
               <% @project.repository['metadata']['funding'].each do |k,v| %>
+                <% next if v.blank? %>
                 <li>
                   <%= k.humanize %>: <%= Array(v).join(', ') %>
                 </li>
