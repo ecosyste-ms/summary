@@ -6,7 +6,7 @@ module ApplicationHelper
   end
 
   def meta_description
-    @meta_description || 
+    @meta_description || app_description
   end
 
   def app_name
