@@ -1,8 +1,6 @@
 @import "bootstrap"; 
+@import "ecosystems"; 
 
-.text-decoration-hover{
-  text-decoration: none;
-  &:hover{
-    text-decoration: underline;
-  }
+pre code.hljs{
+  padding: 0 !important;
 }
