@@ -207,4 +207,74 @@ namespace :projects do
       project.sync_async
     end
   end
+
+  desc 'science '
+  task :science => :environment do
+    require 'csv'
+
+    # Adjust this path to where your CSV actually is
+    file_path = File.expand_path("~/Desktop/Top-20-science.csv")
+
+    repos = []
+
+    CSV.foreach(file_path, headers: true) do |row|
+      repos << row['Repository URL']
+    end
+
+    jsons = []
+
+    repos.each do |repo|
+      url = "https://summary.ecosyste.ms/api/v1/projects/lookup?url=#{repo}"
+      conn = Faraday.new(url: url) do |faraday|
+        faraday.response :follow_redirects
+        faraday.adapter Faraday.default_adapter
+      end
+
+      response = conn.get
+      next unless response.success?
+      json = JSON.parse(response.body)
+      
+      jsons << json
+
+    end
+
+    res = jsons.map do |json|
+      puts json['url']
+      next if json['repository'].blank?
+      {
+        url: json['url'],
+        description: json['repository']['description'],
+        license: json['repository']['license'],
+        stars: json['repository']['stargazers_count'],
+        forks: json['repository']['forks_count'],
+        downloads: json['packages'].map{|x| x['downloads'] || 0 }.sum,
+        docker_downloads: json['packages'].map{|x| x['docker_downloads_count'] || 0 }.sum,
+        committers: json['commits']['total_committers'],
+        language: json['repository']['language'],
+        summary_url: "https://summary.ecosyste.ms/projects/#{json['id']}",
+      }
+    end
+
+    require 'csv'
+
+    csv_path = File.expand_path("~/Desktop/top-science-projects-output.csv")
+    CSV.open(csv_path, "w") do |csv|
+      csv << ["url", "description", "license", "stars", "forks", "downloads", "docker_downloads", "committers", "language", "summary_url"]
+      res.compact.each do |row|
+        csv << [
+          row[:url],
+          row[:description],
+          row[:license],
+          row[:stars],
+          row[:forks],
+          row[:downloads],
+          row[:docker_downloads],
+          row[:committers],
+          row[:language],
+          row[:summary_url],
+        ]
+      end
+    end
+    puts "CSV written to #{csv_path}"
+  end
 end
