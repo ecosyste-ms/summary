@@ -280,6 +280,15 @@ class Project < ApplicationRecord
     EDU_TLDS.any? { |tld| email.end_with?(tld) }
   end
 
+  def educational_commits_percentage
+    return 0 unless commits.present?
+    return 0 unless commits["committers"].present?
+    total = commits["committers"].map{|c| c["count"]}.sum
+    return 0 if total == 0
+    educational = commits["committers"].select{|c| c["email"].present? && educational_email?(c["email"].downcase) }.map{|c| c["count"]}.sum
+    (educational.to_f / total) * 100
+  end
+
   def educational_committers
     return [] unless commits.present?
     return [] unless commits["committers"].present?
