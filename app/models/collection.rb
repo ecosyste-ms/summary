@@ -16,15 +16,33 @@ class Collection < ApplicationRecord
   end
 
   def educational_committers
-    projects.map(&:educational_committers).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
+    hash = Hash.new{|h,k| h[k] = 0}
+    projects.map(&:educational_committers).each do |committers|
+      committers.each do |k,v|
+        hash[k] += v
+      end
+    end
+    hash.sort_by{|k,v| v}.reverse
   end
 
   def educational_committers_emails
-    projects.map(&:educational_committers_emails).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
+    hash = Hash.new{|h,k| h[k] = 0}
+    projects.map(&:educational_committers_emails).each do |emails|
+      emails.each do |k,v|
+        hash[k] += v
+      end
+    end
+    hash.sort_by{|k,v| v}.reverse
   end
 
   def educational_committers_email_domains
-    projects.map(&:educational_committers_email_domains).flatten.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
+    hash = Hash.new{|h,k| h[k] = 0}
+    projects.map(&:educational_committers_email_domains).each do |emails|
+      emails.each do |k,v|
+        hash[k] += v
+      end
+    end
+    hash.sort_by{|k,v| v}.reverse
   end
 
   def committer_details
