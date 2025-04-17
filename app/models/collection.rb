@@ -45,6 +45,16 @@ class Collection < ApplicationRecord
     hash.sort_by{|k,v| v}.reverse
   end
 
+  def committers_email_domains
+    hash = Hash.new{|h,k| h[k] = 0}
+    projects.map(&:committers_email_domains).each do |emails|
+      emails.each do |k,v|
+        hash[k] += v
+      end
+    end
+    hash.sort_by{|k,v| v}.reverse
+  end
+
   def committer_details
     committers = {}
     projects.each do |project|
