@@ -1,5 +1,28 @@
 class Project < ApplicationRecord
 
+  EDU_TLDS = %w[
+    .edu
+    .ac.uk
+    .edu.au
+    .ac.in
+    .edu.cn
+    .edu.sg
+    .ac.jp
+    .edu.co
+    .ac.za
+    .edu.mx
+    .edu.my
+    .ac.kr
+    .edu.hk
+    .ac.nz
+    .ac.id
+    .edu.ph
+    .edu.br
+    .ac.th
+    .ac.ir
+    .ac.il
+  ]
+
   validates :url, presence: true
 
   belongs_to :collection, optional: true
@@ -239,6 +262,40 @@ class Project < ApplicationRecord
     return [] unless commits.present?
     return [] unless commits["committers"].present?
     commits["committers"].map{|c| [c["name"].downcase, c["count"]]}.each_with_object(Hash.new {|h,k| h[k] = 0}) { |(x,d),h| h[x] += d }
+  end
+
+  def committers_emails
+    return [] unless commits.present?
+    return [] unless commits["committers"].present?
+    commits["committers"].map{|c| [c["email"].downcase, c["count"]]}.each_with_object(Hash.new {|h,k| h[k] = 0}) { |(x,d),h| h[x] += d }
+  end
+
+  def committers_email_domains
+    return [] unless commits.present?
+    return [] unless commits["committers"].present?
+    commits["committers"].map{|c| [c["email"].downcase.split('@').last, c["count"]]}.each_with_object(Hash.new {|h,k| h[k] = 0}) { |(x,d),h| h[x] += d }
+  end  
+
+  def educational_email?(email)
+    EDU_TLDS.any? { |tld| email.end_with?(tld) }
+  end
+
+  def educational_committers
+    return [] unless commits.present?
+    return [] unless commits["committers"].present?
+    commits["committers"].select{|c| c["email"].present? && educational_email?(c["email"].downcase) }
+  end
+  
+  def educational_committers_emails
+    return [] unless commits.present?
+    return [] unless commits["committers"].present?
+    commits["committers"].select{|c| c["email"].present? && educational_email?(c["email"].downcase) }.map{|c| [c["email"].downcase, c["count"]]}.each_with_object(Hash.new {|h,k| h[k] = 0}) { |(x,d),h| h[x] += d }
+  end
+  
+  def educational_committers_email_domains
+    return [] unless commits.present?
+    return [] unless commits["committers"].present?
+    commits["committers"].select{|c| c["email"].present? && educational_email?(c["email"].downcase) }.map{|c| [c["email"].downcase.split('@').last, c["count"]]}.each_with_object(Hash.new {|h,k| h[k] = 0}) { |(x,d),h| h[x] += d }
   end
 
   def raw_committers
