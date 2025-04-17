@@ -283,7 +283,7 @@ class Project < ApplicationRecord
   def educational_committers
     return [] unless commits.present?
     return [] unless commits["committers"].present?
-    commits["committers"].select{|c| c["email"].present? && educational_email?(c["email"].downcase) }
+    commits["committers"].select{|c| c["email"].present? && educational_email?(c["email"].downcase) }.map{|c| [c["name"].downcase, c["count"]]}.each_with_object(Hash.new {|h,k| h[k] = 0}) { |(x,d),h| h[x] += d }
   end
   
   def educational_committers_emails
