@@ -1,4 +1,5 @@
 class Project < ApplicationRecord
+  include HttpClient
 
   EDU_TLDS = %w[
     .edu
@@ -72,10 +73,7 @@ class Project < ApplicationRecord
   end
 
   def check_url
-    conn = Faraday.new(url: url) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    conn = build_faraday_connection(url)
 
     response = conn.get
     return unless response.success?
@@ -102,7 +100,8 @@ class Project < ApplicationRecord
 
   def ping
     ping_urls.each do |url|
-      Faraday.get(url) rescue nil
+      conn = build_faraday_connection(url)
+      conn.get rescue nil
     end
   end
 
@@ -138,10 +137,7 @@ class Project < ApplicationRecord
   end
 
   def fetch_repository
-    conn = Faraday.new(url: repos_url) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    conn = build_faraday_connection(repos_url)
 
     response = conn.get
     return unless response.success?
@@ -161,10 +157,7 @@ class Project < ApplicationRecord
 
   def fetch_owner
     return unless owner_url.present?
-    conn = Faraday.new(url: owner_url) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    conn = build_faraday_connection(owner_url)
 
     response = conn.get
     return unless response.success?
@@ -183,19 +176,13 @@ class Project < ApplicationRecord
 
   def fetch_events
     return unless timeline_url.present?
-    conn = Faraday.new(url: timeline_url) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    conn = build_faraday_connection(timeline_url)
 
     response = conn.get
     return unless response.success?
     summary = JSON.parse(response.body)
 
-    conn = Faraday.new(url: timeline_url+'?after='+1.year.ago.to_fs(:iso8601)) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    conn = build_faraday_connection(timeline_url+'?after='+1.year.ago.to_fs(:iso8601))
 
     response = conn.get
     return unless response.success?
@@ -218,10 +205,7 @@ class Project < ApplicationRecord
   end
 
   def fetch_packages
-    conn = Faraday.new(url: packages_url) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    conn = build_faraday_connection(packages_url)
 
     response = conn.get
     return unless response.success?
@@ -240,10 +224,7 @@ class Project < ApplicationRecord
   end
 
   def fetch_commits
-    conn = Faraday.new(url: commits_api_url) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    conn = build_faraday_connection(commits_api_url)
     response = conn.get
     return unless response.success?
     self.commits = JSON.parse(response.body)
@@ -337,10 +318,7 @@ class Project < ApplicationRecord
 
   def fetch_dependencies
     return unless repository.present?
-    conn = Faraday.new(url: repository['manifests_url']) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    conn = build_faraday_connection(repository['manifests_url'])
     response = conn.get
     return unless response.success?
     self.dependencies = JSON.parse(response.body)
@@ -361,7 +339,7 @@ class Project < ApplicationRecord
       # TODO paginate
       # TODO group dependencies by repo
       dependent_repos_url = "https://repos.ecosyste.ms/api/v1/usage/#{package["ecosystem"]}/#{package["name"]}/dependencies"
-      conn = Faraday.new(url: dependent_repos_url)
+      conn = build_faraday_connection(dependent_repos_url)
       response = conn.get
       return unless response.success?
       dependent_repos += JSON.parse(response.body)
@@ -379,10 +357,7 @@ class Project < ApplicationRecord
   end
 
   def fetch_issues
-    conn = Faraday.new(url: issues_api_url) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    conn = build_faraday_connection(issues_api_url)
     response = conn.get
     return unless response.success?
     self.issues = JSON.parse(response.body)
@@ -486,10 +461,7 @@ class Project < ApplicationRecord
   def fetch_file(file_name)
 
     return unless download_url.present?
-    conn = Faraday.new(url: archive_url(file_name)) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    conn = build_faraday_connection(archive_url(file_name))
     response = conn.get
     return unless response.success?
     json = JSON.parse(response.body)

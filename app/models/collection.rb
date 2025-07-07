@@ -1,4 +1,5 @@
 class Collection < ApplicationRecord
+  include HttpClient
   validates :name, :url, presence: true
 
   has_many :projects
@@ -134,7 +135,8 @@ class Collection < ApplicationRecord
   end
 
   def import_keyword(keyword)
-    resp = Faraday.get("https://packages.ecosyste.ms/api/v1/keywords/#{keyword}?per_page=1000")
+    conn = build_faraday_connection("https://packages.ecosyste.ms/api/v1/keywords/#{keyword}?per_page=1000")
+    resp = conn.get
     if resp.status == 200
       data = JSON.parse(resp.body)
       urls = data['packages'].reject{|p| p['status'].present? }.map{|p| p['repository_url'] }.uniq.reject(&:blank?)
@@ -147,7 +149,8 @@ class Collection < ApplicationRecord
   end
 
   def import_topic(topic)
-    resp = Faraday.get("https://repos.ecosyste.ms/api/v1/topics/#{topic}?per_page=1000")
+    conn = build_faraday_connection("https://repos.ecosyste.ms/api/v1/topics/#{topic}?per_page=1000")
+    resp = conn.get
     if resp.status == 200
       data = JSON.parse(resp.body)
       urls = data['repositories'].map{|p| p['html_url'] }.uniq.reject(&:blank?)
@@ -160,7 +163,8 @@ class Collection < ApplicationRecord
   end
 
   def import_org(host, org)
-    resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{host}/owners/#{org}/repositories?per_page=1000")
+    conn = build_faraday_connection("https://repos.ecosyste.ms/api/v1/hosts/#{host}/owners/#{org}/repositories?per_page=1000")
+    resp = conn.get
     if resp.status == 200
       data = JSON.parse(resp.body)
       urls = data.map{|p| p['html_url'] }.uniq.reject(&:blank?)
@@ -174,11 +178,13 @@ class Collection < ApplicationRecord
 
   def import_awesome_list(url)
     lookup_url = "https://awesome.ecosyste.ms/api/v1/lists/lookup?url=#{url}"
-    resp = Faraday.get(lookup_url)
+    conn = build_faraday_connection(lookup_url)
+    resp = conn.get
     if resp.status == 200
       data = JSON.parse(resp.body)
       projects_url = data['projects_url'] + '?per_page=1000'
-      resp = Faraday.get(projects_url)
+      conn2 = build_faraday_connection(projects_url)
+      resp = conn2.get
       if resp.status == 200
         data = JSON.parse(resp.body)
         urls = data.map{|p| p['url'] }.uniq.reject(&:blank?)
