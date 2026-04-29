@@ -134,6 +134,40 @@ class Collection < ApplicationRecord
     combined_hash.sort_by{|k,v| v}.reverse
   end
 
+
+  def import_keywords(keywords, limit: 300)
+    urls = keywords.flat_map do |keyword|
+      keyword = keyword.to_s.strip
+      next [] if keyword.blank?
+
+      keyword_package_urls(keyword) + topic_repository_urls(keyword)
+    end
+
+    urls.compact_blank.uniq.first(limit).each do |url|
+      puts url
+      project = projects.find_or_create_by(url: url)
+      project.sync_async unless project.last_synced_at.present?
+    end
+  end
+
+  def keyword_package_urls(keyword)
+    conn = build_faraday_connection("https://packages.ecosyste.ms/api/v1/keywords/#{keyword}?per_page=1000")
+    resp = conn.get
+    return [] unless resp.status == 200
+
+    data = JSON.parse(resp.body)
+    data['packages'].reject { |package| package['status'].present? }.map { |package| package['repository_url'] }
+  end
+
+  def topic_repository_urls(topic)
+    conn = build_faraday_connection("https://repos.ecosyste.ms/api/v1/topics/#{topic}?per_page=1000")
+    resp = conn.get
+    return [] unless resp.status == 200
+
+    data = JSON.parse(resp.body)
+    data['repositories'].map { |repository| repository['html_url'] }
+  end
+
   def import_keyword(keyword)
     conn = build_faraday_connection("https://packages.ecosyste.ms/api/v1/keywords/#{keyword}?per_page=1000")
     resp = conn.get
@@ -200,6 +234,10 @@ class Collection < ApplicationRecord
   def import_tag(tag)
     import_keyword(tag)
     import_topic(tag)
+  end
+
+  def import_tags(tags, limit: 300)
+    import_keywords(Array(tags), limit: limit)
   end
 
   def remove_duplicate_projects
