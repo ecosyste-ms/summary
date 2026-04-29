@@ -108,6 +108,28 @@
           </div>
         </div>
 
+        <% interesting_dependents = @collection.interesting_dependent_repos %>
+        <% if interesting_dependents.any? %>
+          <div class='card mb-3'>
+            <div class="card-header">
+              Interesting dependent projects
+            </div>
+            <div class="list-group list-group-flush">
+              <% interesting_dependents.each do |repo| %>
+                <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="<%= repo['html_url'] || repo['url'] %>" target="_blank">
+                  <span>
+                    <%= repo['full_name'] || repo['name'] || repo['html_url'] || repo['url'] %>
+                    <small class="text-muted d-block">
+                      Used by <%= pluralize(repo['seen_count'], 'collection project') %>
+                    </small>
+                  </span>
+                  <span class="badge bg-primary rounded-pill"><%= number_with_delimiter repo['score'].to_i %></span>
+                </a>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
         <div class='card mb-3'>
           <div class="card-header">
             Repository Owners
