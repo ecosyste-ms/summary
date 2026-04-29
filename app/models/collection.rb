@@ -97,6 +97,31 @@ class Collection < ApplicationRecord
     projects.select{|p| p.committers_names.include?(name) }
   end
 
+
+  def interesting_dependent_repos(limit: 30)
+    collection_urls = projects.pluck(:url).compact.map(&:downcase).to_set
+    candidates = {}
+
+    projects.where.not(dependent_repos: nil).find_each do |project|
+      Array(project.dependent_repos).each do |repo|
+        next unless repo.is_a?(Hash)
+
+        url = repo['html_url'] || repo['url']
+        next if url.blank?
+        next if collection_urls.include?(url.downcase)
+
+        candidates[url] ||= repo.merge('seen_count' => 0, 'dependency_sources' => [])
+        candidates[url]['seen_count'] += 1
+        candidates[url]['dependency_sources'] << project.url
+        candidates[url]['score'] = [candidates[url]['score'].to_f, repo['score'].to_f].max
+      end
+    end
+
+    candidates.values.sort_by { |repo|
+      [repo['score'].to_f, repo['seen_count'].to_i, repo['stargazers_count'].to_i]
+    }.reverse.first(limit)
+  end
+
   def dependencies
     deps = projects.map(&:dependency_packages).flatten(1)
     deps.group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
